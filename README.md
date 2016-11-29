@@ -4,7 +4,7 @@ World of Tanks (WoT) ASIA クライアント用のいわゆるパスワード保
 
 ## インストール
 
-[リリースページ](../../releases) から mod_saveaccount.pyc をダウンロードして、
+[リリースページ](../../releases/latest) から mod_saveaccount.pyc をダウンロードして、
 他の多くの mod と同じように WoT インストールフォルダの
 res_mods\XXX\scripts\client\gui\mods にコピーします (XXX はクライアントのバージョン)。
 
