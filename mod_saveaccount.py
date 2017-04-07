@@ -3,9 +3,11 @@
 import BigWorld
 from debug_utils import LOG_CURRENT_EXCEPTION
 from gui import GUI_SETTINGS
+from helpers import dependency
+from skeletons.gui.login_manager import ILoginManager
 
 MOD_NAME = 'SaveAccount'
-MOD_VERSION = '1.1'
+MOD_VERSION = '1.2'
 
 def init():
 
@@ -23,7 +25,8 @@ def init():
 
         BigWorld.logInfo(MOD_NAME, 'GUI_SETTINGS.rememberPassVisible = {0} -> {1}'.format(oldValue1, newValue1), None)
         BigWorld.logInfo(MOD_NAME, 'GUI_SETTINGS.clearLoginValue= {0} -> {1}'.format(oldValue2, newValue2), None)
-        
+
+        loginManager = dependency.descriptor(ILoginManager)
+        loginManager.init()
     except:
         LOG_CURRENT_EXCEPTION()
-    
