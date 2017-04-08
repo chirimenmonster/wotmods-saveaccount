@@ -7,7 +7,7 @@ from helpers import dependency
 from skeletons.gui.login_manager import ILoginManager
 
 MOD_NAME = 'SaveAccount'
-MOD_VERSION = '1.2'
+MOD_VERSION = '1.2.1'
 
 def init():
 
@@ -26,7 +26,8 @@ def init():
         BigWorld.logInfo(MOD_NAME, 'GUI_SETTINGS.rememberPassVisible = {0} -> {1}'.format(oldValue1, newValue1), None)
         BigWorld.logInfo(MOD_NAME, 'GUI_SETTINGS.clearLoginValue= {0} -> {1}'.format(oldValue2, newValue2), None)
 
-        loginManager = dependency.descriptor(ILoginManager)
+        loginManager = dependency.instance(ILoginManager)
         loginManager.init()
+        BigWorld.logInfo(MOD_NAME, 'reload login preference', None)
     except:
         LOG_CURRENT_EXCEPTION()
