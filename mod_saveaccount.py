@@ -7,7 +7,7 @@ from helpers import dependency
 from skeletons.gui.login_manager import ILoginManager
 
 MOD_NAME = 'SaveAccount'
-MOD_VERSION = '1.2.1'
+MOD_VERSION = '1.2.2'
 
 def init():
 
