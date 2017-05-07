@@ -3,7 +3,7 @@ import py_compile
 import zipfile
 
 SRC = 'mod_saveaccount.py'
-WOTMOD = 'saveaccount-1.2.1.wotmod'
+WOTMOD = 'chirimen.saveaccount_1.2.2.wotmod'
 
 MOD_REL_DIR = 'scripts/client/gui/mods'
 WOTMOD_DIR = 'res'

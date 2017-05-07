@@ -1,5 +1,5 @@
 <root>
-   <id>SaveAccount</id>
+   <id>chirimen.saveaccount</id>
    <version>1.2.1</version>
    <name>SaveAccount</name>
    <description>yet another save password - visible checkbox "remember me" and disable to clear login value</description>
