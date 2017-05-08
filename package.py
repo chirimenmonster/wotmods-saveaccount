@@ -1,12 +1,29 @@
 import os
+import shutil
 import py_compile
 import zipfile
+import ConfigParser
+from string import Template
 
-SRC = 'mod_saveaccount.py'
-WOTMOD = 'chirimen.saveaccount_1.2.2.wotmod'
+SCRIPT_NAME = 'mod_saveaccount'
 
-MOD_REL_DIR = 'scripts/client/gui/mods'
-WOTMOD_DIR = 'res'
+WOTMOD_ROOTDIR = 'res'
+SCRIPT_RELDIR = 'scripts/client/gui/mods'
+
+BUILD_DIR = 'build'
+
+files = [
+    (SCRIPT_NAME + '.py', SCRIPT_NAME + '.pyc', SCRIPT_RELDIR),
+    'meta.xml',
+    'readme.txt'
+]
+
+def compile_python(src, dst, virtualdir):
+    py_compile.compile(file=src, cfile=dst, dfile=os.path.join(virtualdir, src), doraise=True)
+
+def apply_template(src, dstdir, parameters):
+    with open(src, 'r') as in_file, open(os.path.join(dstdir, src), 'w') as out_file:
+        out_file.write(Template(in_file.read()).substitute(parameters))
 
 def split(path):
     head, tail = os.path.split(path)
@@ -15,30 +32,55 @@ def split(path):
     result = split(head)
     result.append(path)
     return result
-
+    
 def main():
-    mod = os.path.splitext(SRC)[0] + '.pyc'
-    py_compile.compile(file=SRC, cfile=mod, dfile=os.path.join(MOD_REL_DIR, SRC), doraise=True)
+    inifile = ConfigParser.SafeConfigParser()
+    inifile.read('config.ini')
+
+    class config:
+        name        = inifile.get('mod', 'name')
+        author      = inifile.get('mod', 'author')
+        version     = inifile.get('mod', 'version')
+        description = inifile.get('mod', 'description')
+        support_url = inifile.get('mod', 'support_url')
+        github_page = inifile.get('mod', 'github_page')
+        wot_version = inifile.get('wot', 'version')
+
+    parameters = dict(
+        package     = '{}.{}_{}.wotmod'.format(config.author, config.name, config.version).lower(),
+        package_id  = '{}.{}'.format(config.author, config.name).lower(),
+        name        = config.name,
+        author      = config.author,
+        version     = config.version,
+        description = config.description,
+        support_url = config.support_url,
+        github_page = config.github_page,
+        wot_version = config.wot_version
+    )
 
     try:
-        os.remove(WOTMOD)  
+        shutil.rmtree(BUILD_DIR)
     except:
         pass
+    os.makedirs(BUILD_DIR)
 
-    list = split(os.path.join(WOTMOD_DIR, MOD_REL_DIR, mod))
-    list.pop()
-    
     paths = []
-    for d in list:
-        paths.append(('.', d))
-    
-    paths.append((mod, os.path.join(WOTMOD_DIR, MOD_REL_DIR, mod)))
-    paths.append(('meta.xml',   'meta.xml'      ))
-    paths.append(('readme.txt', 'readme.txt'    ))
-    
-    with zipfile.ZipFile(WOTMOD, 'w', compression=zipfile.ZIP_STORED) as package_file:
+    for target in files:
+        if isinstance(target, list) or isinstance(target, tuple):
+            src, dst, reldir = target
+            apply_template(src, BUILD_DIR, parameters)
+            compile_python(os.path.join(BUILD_DIR, src), os.path.join(BUILD_DIR, dst), reldir)
+            paths.append((dst, os.path.join(WOTMOD_ROOTDIR, reldir, dst)))
+        else:
+            apply_template(target, BUILD_DIR, parameters)      
+            paths.append((target, target))
+
+    package_path = os.path.join(BUILD_DIR, parameters['package'])
+    with zipfile.ZipFile(package_path, 'w', compression=zipfile.ZIP_STORED) as package_file:
         for source, target in paths:
-            package_file.write(source, target, zipfile.ZIP_STORED)
+            for dir in split(target)[0:-1]:
+                package_file.write('.', dir, zipfile.ZIP_STORED)
+            package_file.write(os.path.join(BUILD_DIR, source), target, zipfile.ZIP_STORED)
 
 if __name__ == "__main__":
     main()

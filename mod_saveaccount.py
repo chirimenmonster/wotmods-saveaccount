@@ -6,13 +6,16 @@ from gui import GUI_SETTINGS
 from helpers import dependency
 from skeletons.gui.login_manager import ILoginManager
 
-MOD_NAME = 'SaveAccount'
-MOD_VERSION = '1.2.2'
+class MOD:
+    AUTHOR = '${author}'
+    NAME = '${name}'
+    VERSION = '${version}'
+    DESCRIPTION = '${description}'
+    SUPPORT_URL = '${support_url}'
 
 def init():
-
     try:
-        BigWorld.logInfo(MOD_NAME, '{0} version {1}, mod to save account info'.format(MOD_NAME, MOD_VERSION), None)
+        BigWorld.logInfo(MOD.NAME, '{0} {1} ({2})'.format(MOD.NAME, MOD.VERSION, MOD.SUPPORT_URL), None)
         
         oldValue1 = GUI_SETTINGS.rememberPassVisible 
         oldValue2 = GUI_SETTINGS.clearLoginValue
@@ -23,11 +26,11 @@ def init():
         newValue1 = GUI_SETTINGS.rememberPassVisible 
         newValue2 = GUI_SETTINGS.clearLoginValue
 
-        BigWorld.logInfo(MOD_NAME, 'GUI_SETTINGS.rememberPassVisible = {0} -> {1}'.format(oldValue1, newValue1), None)
-        BigWorld.logInfo(MOD_NAME, 'GUI_SETTINGS.clearLoginValue= {0} -> {1}'.format(oldValue2, newValue2), None)
+        BigWorld.logInfo(MOD.NAME, 'GUI_SETTINGS.rememberPassVisible = {0} -> {1}'.format(oldValue1, newValue1), None)
+        BigWorld.logInfo(MOD.NAME, 'GUI_SETTINGS.clearLoginValue= {0} -> {1}'.format(oldValue2, newValue2), None)
 
         loginManager = dependency.instance(ILoginManager)
         loginManager.init()
-        BigWorld.logInfo(MOD_NAME, 'reload login preference', None)
+        BigWorld.logInfo(MOD.NAME, 'reload login preference', None)
     except:
         LOG_CURRENT_EXCEPTION()
