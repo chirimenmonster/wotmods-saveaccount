@@ -19,7 +19,7 @@ gui_settings.xml は必要としないので、元の gui_settings.xml が更新
 
 ## インストール
 .wotmod ファイル (${package}) を WoT クライアントの mod フォルダ
-(ex. C:\Games\World_of_Tanks\mods\${wot_version})　にコピーして下さい。
+(ex. C:\Games\World_of_Tanks\mods\${wot_version}) にコピーして下さい。
 
 ## 関連情報
 * [ASIA フォーラム](${support_url})
