@@ -19,3 +19,7 @@ gui_settings.xml 内には他の設定項目も数多く含まれており、
 この mod は gui_settings.xml の設定のうち、
 アカウント情報の保存にかかわる設定のみを変更するので
 クライアントのバージョン更新の影響を受けにくいという長所があります (影響がないとは言っていない)。
+
+## サポート
++ [ASIA公式フォーラム](http://forum.worldoftanks.asia/index.php?/topic/69879-)
++ [twitter](https://twitter.com/chirimenspiral)
