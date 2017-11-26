@@ -5,25 +5,31 @@ import zipfile
 import ConfigParser
 from string import Template
 
-SCRIPT_NAME = 'mod_saveaccount'
+SCRIPT_NAME = 'mod_saveaccount.py'
 
 WOTMOD_ROOTDIR = 'res'
 SCRIPT_RELDIR = 'scripts/client/gui/mods'
 
 BUILD_DIR = 'build'
 
-files = [
-    (SCRIPT_NAME + '.py', SCRIPT_NAME + '.pyc', SCRIPT_RELDIR),
+SRCS = [
+    (SCRIPT_NAME, SCRIPT_RELDIR),
     'meta.xml',
     'readme.txt'
 ]
 
-def compile_python(src, dst, virtualdir):
-    py_compile.compile(file=src, cfile=dst, dfile=os.path.join(virtualdir, src), doraise=True)
+def compile_python(src, dstdir, virtualdir):
+    basename = os.path.basename(src)
+    dstfile = os.path.splitext(basename)[0] + '.pyc'
+    py_compile.compile(file=src, cfile=os.path.join(dstdir, dstfile), dfile=os.path.join(virtualdir, basename), doraise=True)
+    return dstfile
 
 def apply_template(src, dstdir, parameters):
-    with open(src, 'r') as in_file, open(os.path.join(dstdir, src), 'w') as out_file:
+    basename = os.path.basename(src)
+    dst = os.path.join(dstdir, basename)
+    with open(src, 'r') as in_file, open(dst, 'w') as out_file:
         out_file.write(Template(in_file.read()).substitute(parameters))
+    return basename
 
 def split(path):
     head, tail = os.path.split(path)
@@ -62,25 +68,45 @@ def main():
         shutil.rmtree(BUILD_DIR)
     except:
         pass
-    os.makedirs(BUILD_DIR)
+    
+    create_package(SRCS, os.path.join(BUILD_DIR, 'vanilla'), parameters)
+    
+    SRCS.append(('../wotmods-preferredserver/mods/mod_preferredserver.py', SCRIPT_RELDIR))
+    name = config.name + 'Plus'
+    parameters['package'] = '{}.{}_{}.wotmod'.format(config.author, name, config.version).lower()
+    parameters['name'] = name
+    parameters['version'] = config.version + '+'
+
+    create_package(SRCS, os.path.join(BUILD_DIR, 'plus'), parameters)
+
+    
+def create_package(files, build_dir, parameters):
+    try:
+        shutil.rmtree(build_dir)
+    except:
+        pass
+    os.makedirs(build_dir)
 
     paths = []
     for target in files:
         if isinstance(target, list) or isinstance(target, tuple):
-            src, dst, reldir = target
-            apply_template(src, BUILD_DIR, parameters)
-            compile_python(os.path.join(BUILD_DIR, src), os.path.join(BUILD_DIR, dst), reldir)
+            src, reldir = target
+            file = apply_template(src, build_dir, parameters)
+            dst = compile_python(os.path.join(build_dir, file), build_dir, reldir)
             paths.append((dst, os.path.join(WOTMOD_ROOTDIR, reldir, dst)))
         else:
-            apply_template(target, BUILD_DIR, parameters)      
-            paths.append((target, target))
+            dst = apply_template(target, build_dir, parameters)
+            paths.append((dst, dst))
 
-    package_path = os.path.join(BUILD_DIR, parameters['package'])
+    package_path = os.path.join(build_dir, parameters['package'])
     with zipfile.ZipFile(package_path, 'w', compression=zipfile.ZIP_STORED) as package_file:
         for source, target in paths:
             for dir in split(target)[0:-1]:
-                package_file.write('.', dir, zipfile.ZIP_STORED)
-            package_file.write(os.path.join(BUILD_DIR, source), target, zipfile.ZIP_STORED)
+                try:
+                    package_file.getinfo(dir + '/')
+                except KeyError:
+                    package_file.write('.', dir, zipfile.ZIP_STORED)
+            package_file.write(os.path.join(build_dir, source), target, zipfile.ZIP_STORED)
 
 if __name__ == "__main__":
     main()
