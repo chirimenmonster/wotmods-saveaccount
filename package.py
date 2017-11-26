@@ -2,10 +2,15 @@ import os
 import shutil
 import py_compile
 import zipfile
+import urllib
 import ConfigParser
 from string import Template
 
 SCRIPT_NAME = 'mod_saveaccount.py'
+
+ALT_SCRIPT_NAME = 'mod_preferredserver.py'
+ALT_SCRIPT_LOCATION = 'https://raw.githubusercontent.com/chirimenmonster/wotmods-preferredserver/v0.3/mods/'
+ALT_SCRIPT_URL = ALT_SCRIPT_LOCATION + ALT_SCRIPT_NAME
 
 WOTMOD_ROOTDIR = 'res'
 SCRIPT_RELDIR = 'scripts/client/gui/mods'
@@ -70,8 +75,9 @@ def main():
         pass
     
     create_package(SRCS, os.path.join(BUILD_DIR, 'vanilla'), parameters)
-    
-    SRCS.append(('../wotmods-preferredserver/mods/mod_preferredserver.py', SCRIPT_RELDIR))
+
+    urllib.urlretrieve(ALT_SCRIPT_URL, os.path.join(BUILD_DIR, ALT_SCRIPT_NAME))
+    SRCS.append((os.path.join(BUILD_DIR, ALT_SCRIPT_NAME), SCRIPT_RELDIR))
     name = config.name + 'Plus'
     parameters['package'] = '{}.{}_{}.wotmod'.format(config.author, name, config.version).lower()
     parameters['name'] = name
