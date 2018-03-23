@@ -1,4 +1,4 @@
-# SaveAccount: Mod to save account info for World of Tanks ASIA by Chirimen
+"""WoT mod to save account information"""
 
 import BigWorld
 from debug_utils import LOG_CURRENT_EXCEPTION
@@ -7,6 +7,7 @@ from helpers import dependency
 from skeletons.gui.login_manager import ILoginManager
 
 class MOD:
+    """mod's information"""
     AUTHOR = '${author}'
     NAME = '${name}'
     VERSION = '${version}'
@@ -16,6 +17,7 @@ class MOD:
 SETTINGS = { 'rememberPassVisible': True, 'clearLoginValue': False }
 
 def init():
+    """called on mod's initialization phase"""
     try:
         BigWorld.logInfo(MOD.NAME, '{0} {1} ({2})'.format(MOD.NAME, MOD.VERSION, MOD.SUPPORT_URL), None)
 
